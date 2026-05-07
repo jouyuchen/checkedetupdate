@@ -156,6 +156,28 @@
     }
     .btn-ghost:hover { background: #c8c2b5; }
 
+    /* E-sign status */
+    .esign-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .esign-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      min-width: 80px;
+    }
+    .esign-none {
+      font-size: 0.84rem;
+      color: var(--color-text-disabled);
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .badge.warn { animation: pulse 1.8s infinite; }
+
     /* Messages */
     .error-msg {
       background: var(--color-danger-subtle);
@@ -336,6 +358,12 @@
           </thead>
           <tbody id="date-tbody"></tbody>
         </table>
+
+        <div id="esign-section" class="hidden">
+          <hr>
+          <div class="section-label">電子簽署狀態</div>
+          <div id="esign-content"></div>
+        </div>
 
         <div class="actions">
           <button class="btn-cta" onclick="goToUpdate()">進入更新 →</button>
