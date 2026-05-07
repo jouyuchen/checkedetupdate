@@ -1,4 +1,4 @@
-const CACHE = 'contract-sync-v3';
+const CACHE = 'contract-sync-v4';
 
 // 安裝時跳過等待，立即接管
 self.addEventListener('install', () => self.skipWaiting());
@@ -11,6 +11,8 @@ self.addEventListener('activate', e => {
         keys.filter(k => k !== CACHE).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({ type: 'window' }))
+      .then(clients => clients.forEach(c => c.navigate(c.url)))
   );
 });
 
