@@ -61,8 +61,19 @@ async function doSearch() {
   }
 }
 
+function classifyStatus(str) {
+  if (!str) return { cls: 'yellow', label: '未知' };
+  const s = str.toLowerCase();
+  if (s.includes('作廢') || s.includes('void')) return { cls: 'red', label: '已作廢' };
+  if (s.includes('completed') && !s.includes('pending') && !s.includes('sent'))
+    return { cls: 'green', label: '全部完成' };
+  if (s.includes('completed') || s.includes('sent') || s.includes('delivered'))
+    return { cls: 'yellow', label: '進行中' };
+  return { cls: 'yellow', label: '進行中' };
+}
+
 function renderEsign(esign) {
-  const el = document.getElementById('esign-content');
+  const el      = document.getElementById('esign-content');
   const section = document.getElementById('esign-section');
 
   if (!esign || !esign.statusForAll) {
@@ -71,10 +82,7 @@ function renderEsign(esign) {
     return;
   }
 
-  const statusRaw = (esign.statusForAll || '').toLowerCase().trim();
-  let badgeClass = 'yellow';
-  if (statusRaw === 'completed') badgeClass = 'green';
-  else if (statusRaw === 'voided' || statusRaw === 'void') badgeClass = 'red';
+  const { cls, label } = classifyStatus(esign.statusForAll);
 
   const pendingDays = parseFloat(esign.pendingTime);
   const hasPending  = !isNaN(pendingDays) && esign.pendingTime !== '';
@@ -91,7 +99,10 @@ function renderEsign(esign) {
   el.innerHTML = `
     <div class="esign-row">
       <span class="esign-label">Status</span>
-      <span class="badge ${badgeClass}">${esign.statusForAll}</span>
+      <span class="badge ${cls}">${label}</span>
+    </div>
+    <div style="font-size:0.78rem;color:var(--color-text-secondary);margin-top:7px;line-height:1.7;word-break:break-word;">
+      ${esign.statusForAll}
     </div>
     ${pendingHtml}`;
   section.classList.remove('hidden');
