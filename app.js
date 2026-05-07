@@ -1,6 +1,6 @@
 const CONFIG = {
   searchUrl: 'https://alleypin.app.n8n.cloud/webhook/contract-search',
-  syncUrl:   'https://alleypin.app.n8n.cloud/webhook-test/contract-sync'
+  syncUrl:   'https://alleypin.app.n8n.cloud/webhook/contract-sync'
 };
 
 let state = {};
@@ -51,6 +51,7 @@ async function doSearch() {
 
     state = data;
     renderResult(data);
+    renderEsign(data.esign || null);
 
   } catch (e) {
     setError('search-error', '連線失敗，請確認 Webhook URL');
@@ -58,6 +59,42 @@ async function doSearch() {
     btn.disabled = false;
     document.getElementById('search-loading').classList.add('hidden');
   }
+}
+
+function renderEsign(esign) {
+  const el = document.getElementById('esign-content');
+  const section = document.getElementById('esign-section');
+
+  if (!esign || !esign.statusForAll) {
+    el.innerHTML = '<div class="esign-none">— 尚未電子寄送</div>';
+    section.classList.remove('hidden');
+    return;
+  }
+
+  const statusRaw = (esign.statusForAll || '').toLowerCase().trim();
+  let badgeClass = 'yellow';
+  if (statusRaw === 'completed') badgeClass = 'green';
+  else if (statusRaw === 'voided' || statusRaw === 'void') badgeClass = 'red';
+
+  const pendingDays = parseFloat(esign.pendingTime);
+  const hasPending  = !isNaN(pendingDays) && esign.pendingTime !== '';
+  const isWarning   = hasPending && pendingDays > 3;
+
+  const pendingHtml = hasPending ? `
+    <div class="esign-row" style="margin-top:8px;">
+      <span class="esign-label">Pending</span>
+      <span class="badge ${isWarning ? 'red warn' : 'green'}">
+        ${isWarning ? '⚠ ' : ''}${pendingDays} 天
+      </span>
+    </div>` : '';
+
+  el.innerHTML = `
+    <div class="esign-row">
+      <span class="esign-label">Status</span>
+      <span class="badge ${badgeClass}">${esign.statusForAll}</span>
+    </div>
+    ${pendingHtml}`;
+  section.classList.remove('hidden');
 }
 
 function renderResult({ ragic, pd, diff }) {
@@ -174,6 +211,7 @@ function reset() {
   state = {};
   document.getElementById('inp-contractId').value = '';
   document.getElementById('result-section').classList.add('hidden');
+  document.getElementById('esign-section').classList.add('hidden');
   showScreen('screen-search');
 }
 
