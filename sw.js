@@ -1,4 +1,4 @@
-const CACHE = 'contract-sync-v2';
+const CACHE = 'contract-sync-v3';
 
 // 安裝時跳過等待，立即接管
 self.addEventListener('install', () => self.skipWaiting());
