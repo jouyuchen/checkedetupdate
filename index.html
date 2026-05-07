@@ -2,198 +2,399 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>Artboard Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合約同步系統</title>
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#2C3A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="合約同步">
+  <link rel="apple-touch-icon" href="./icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #EDE8DF;
+      --color-surface: #F5F2EC;
+      --color-surface-low: #D9D3C7;
+      --color-text: #2C3A4A;
+      --color-text-secondary: #5A6A7A;
+      --color-text-disabled: #9AABB8;
+      --color-primary: #548EB8;
+      --color-primary-light: #97AFCA;
+      --color-primary-dark: #4C7A91;
+      --color-primary-subtle: #BAC2D0;
+      --color-cta: #C66240;
+      --color-cta-subtle: #F0D4C6;
+      --color-success: #4A7A65;
+      --color-success-subtle: #C5D9D2;
+      --color-warning: #9A7845;
+      --color-warning-subtle: #E5D8BE;
+      --color-danger: #D28187;
+      --color-danger-subtle: #E9D7D5;
+      --color-info: #627787;
+      --color-info-subtle: #BAC2D0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Quicksand', 'Noto Sans TC', sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      min-height: 100vh;
+      padding: 20px 16px 48px;
+    }
+
+    .container { max-width: 520px; margin: 0 auto; }
+
+    /* Header */
+    header {
+      background: var(--color-text);
+      color: var(--color-surface);
+      padding: 18px 22px;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 4px 8px rgba(44,58,74,0.12), 0 2px 4px rgba(44,58,74,0.08);
+    }
+    header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    header .subtitle {
+      font-size: 0.72rem;
+      color: var(--color-primary-light);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    /* Card */
+    .card {
+      background: var(--color-surface);
+      border-radius: 0 0 12px 12px;
+      padding: 24px 20px;
+      box-shadow: 0 4px 8px rgba(44,58,74,0.10), 0 2px 4px rgba(44,58,74,0.06);
+    }
+
+    /* Steps */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 22px;
+    }
+    .step {
+      font-size: 0.72rem;
+      color: var(--color-text-disabled);
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+    .step.active {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+    .step-sep { color: var(--color-surface-low); font-size: 0.7rem; }
+
+    /* Form fields */
+    .field-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="date"] {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--color-bg);
+      border: 1.5px solid var(--color-surface-low);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Quicksand', 'Noto Sans TC', sans-serif;
+      color: var(--color-text);
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-appearance: none;
+    }
+    input::placeholder { color: var(--color-text-disabled); }
+    input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      background: var(--color-surface);
+    }
+
+    /* Buttons */
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: 'Quicksand', 'Noto Sans TC', sans-serif;
+      letter-spacing: 0.02em;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+      margin-top: 6px;
+      box-shadow: 0 1px 3px rgba(44,58,74,0.12);
+    }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-primary:disabled { background: var(--color-text-disabled); cursor: not-allowed; box-shadow: none; }
+    .btn-cta {
+      background: var(--color-cta);
+      color: white;
+      box-shadow: 0 1px 3px rgba(44,58,74,0.12);
+    }
+    .btn-cta:hover { background: #b3562e; }
+    .btn-cta:disabled { background: var(--color-text-disabled); cursor: not-allowed; box-shadow: none; }
+    .btn-ghost {
+      background: var(--color-surface-low);
+      color: var(--color-text-secondary);
+      width: auto;
+      padding: 12px 20px;
+    }
+    .btn-ghost:hover { background: #c8c2b5; }
+
+    /* Messages */
+    .error-msg {
+      background: var(--color-danger-subtle);
+      color: var(--color-danger);
+      border-left: 3px solid var(--color-danger);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.84rem;
+      font-weight: 500;
+      margin-top: 12px;
+    }
+    .loading-msg {
+      color: var(--color-text-disabled);
+      font-size: 0.84rem;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    /* Info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .info-card {
+      background: var(--color-bg);
+      border-radius: 8px;
+      padding: 11px 13px;
+    }
+    .info-card .label {
+      font-size: 0.68rem;
+      color: var(--color-text-disabled);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .info-card .value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text);
+      word-break: break-all;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge.red    { background: var(--color-danger-subtle);  color: var(--color-danger); }
+    .badge.yellow { background: var(--color-warning-subtle); color: var(--color-warning); }
+    .badge.green  { background: var(--color-success-subtle); color: var(--color-success); }
+
+    /* Section label */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    hr { border: none; border-top: 1px solid var(--color-surface-low); margin: 20px 0; }
+
+    /* Comparison table */
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left;
+      padding: 7px 10px;
+      font-size: 0.68rem;
+      color: var(--color-text-disabled);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1.5px solid var(--color-surface-low);
+    }
+    tbody td {
+      padding: 12px 10px;
+      font-size: 0.86rem;
+      border-bottom: 1px solid var(--color-bg);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    td.field-name { color: var(--color-text-secondary); font-weight: 500; font-size: 0.82rem; }
+    td.ragic-val  { color: var(--color-text); font-weight: 500; }
+    td.pd-val.match { color: var(--color-text); }
+    td.pd-val.diff  { color: var(--color-danger); font-weight: 700; }
+    td.status-cell  { text-align: right; }
+
+    /* Actions row */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      align-items: center;
+    }
+    .actions .btn-cta { flex: 1; }
+
+    /* Update form */
+    .field-group { margin-bottom: 16px; }
+    .field-group .field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    /* Success */
+    .success-screen { text-align: center; padding: 40px 16px; }
+    .success-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--color-success-subtle);
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .success-icon svg { width: 28px; height: 28px; }
+    .success-screen h2 { font-size: 1.2rem; color: var(--color-success); margin-bottom: 8px; }
+    .success-screen p { font-size: 0.84rem; color: var(--color-text-secondary); line-height: 1.6; }
+    .success-screen button { margin-top: 24px; }
+
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-<div id="app">
+<div class="container">
+  <header>
+    <h1>合約同步系統</h1>
+    <div class="subtitle">Ragic → Pipedrive</div>
+  </header>
 
-  <!-- Header -->
-  <div class="panel-header">
-    <div class="header-left">
-      <h1>Artboard Manager</h1>
-      <span id="artboardCount" class="count-badge">0</span>
-    </div>
-    <div class="header-right">
-      <button id="btnTheme" class="icon-btn">☽</button>
-    </div>
-  </div>
+  <div class="card">
 
-  <!-- No document -->
-  <div id="noDocState" class="empty-state" style="display:none;">
-    <div class="empty-icon">&#9634;</div>
-    <p data-i18n="noDoc">請先在 Illustrator 開啟一個文件</p>
-    <button class="btn btn-ghost btn-sm" id="btnRetry" style="margin-top:8px;" data-i18n="refresh">重新整理</button>
-  </div>
-
-  <!-- Artboard list -->
-  <div id="artboardList" class="artboard-list"></div>
-
-  <!-- Bottom buttons -->
-  <div id="addSection" class="add-section" style="display:none;">
-    <div class="add-btn-row">
-      <button id="btnShowAdd"   class="btn btn-cta"   data-i18n="btnAdd">&#xFF0B; 新增工作區域</button>
-      <button id="btnShowCombo" class="btn btn-combo"  data-i18n="btnCombo">&#9783; 選擇新增組合</button>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div class="panel-footer">
-    <span id="docName">—</span>
-    <span data-i18n="version">Artboard Manager v1.3</span>
-  </div>
-
-  <!-- Copyright -->
-  <div class="copyright">Lurn Creative Ltd. &nbsp;Triple.Cell_illustration</div>
-
-  <!-- ════════════════════════════════════
-       Modal A：新增工作區域
-  ════════════════════════════════════ -->
-  <div id="addModal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <span class="modal-header-title" data-i18n="modalAddTitle">新增工作區域</span>
-        <button class="modal-close btn-close-modal">&#x2715;</button>
-      </div>
-      <div class="modal-body">
-
-        <!-- 單位 + 間距 -->
-        <div class="modal-unit-row">
-          <span class="section-label" data-i18n="unitLabel">單位</span>
-          <div class="unit-toggle" id="unitToggleSingle">
-            <button class="unit-btn" data-unit="mm">mm</button>
-            <button class="unit-btn" data-unit="cm">cm</button>
-            <button class="unit-btn active" data-unit="px">px</button>
-          </div>
-          <div class="gap-field">
-            <span class="section-label" data-i18n="gapLabel">新增間距</span>
-            <input type="number" id="addGap" class="gap-input" value="250" min="0" step="1">
-          </div>
-          <div class="dir-field">
-            <span class="section-label" data-i18n="dirLabel">方向</span>
-            <div class="dir-toggle" id="dirToggleSingle">
-              <button class="dir-btn active" data-dir="right" data-i18n="dirRight">→ 往右</button>
-              <button class="dir-btn" data-dir="down" data-i18n="dirDown">↓ 往下</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 預設 chips -->
-        <span class="section-label" data-i18n="presetLabel">預設尺寸</span>
-        <div class="preset-grid" id="presetGridSingle"></div>
-
-        <!-- 儲存自訂預設 -->
-        <div id="savePresetRow" class="save-preset-row" style="display:none;">
-          <input type="text" id="savePresetName" class="input-sm" data-i18n-ph="presetNamePh" placeholder="預設名稱">
-          <button id="btnSavePreset"  class="btn btn-primary btn-sm" data-i18n="saveBtn">儲存</button>
-          <button id="btnCancelSave"  class="btn btn-ghost   btn-sm">✕</button>
-        </div>
-        <button id="btnShowSavePreset" class="btn-text-link" style="margin-bottom:10px;display:block;" data-i18n="saveCurrentSize">＋ 儲存目前尺寸為預設</button>
-
-        <!-- 名稱 + W/H -->
-        <div class="modal-field">
-          <label data-i18n="nameOptional">名稱（選填）</label>
-          <input type="text" id="addName" class="input-full" data-i18n-ph="nameAutoPh" placeholder="留空自動命名">
-        </div>
-        <div class="form-two-col">
-          <div class="form-field">
-            <label>W (<span class="unit-display-add">px</span>)</label>
-            <input type="number" id="addWidth" placeholder="1920" min="1" step="0.01">
-          </div>
-          <div class="form-field">
-            <label>H (<span class="unit-display-add">px</span>)</label>
-            <input type="number" id="addHeight" placeholder="1080" min="1" step="0.01">
-          </div>
-        </div>
-
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost btn-sm btn-close-modal" data-i18n="cancel">取消</button>
-        <button id="btnConfirmAdd" class="btn btn-cta btn-sm" data-i18n="add">新增</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════════════
-       Modal B：選擇 / 建立組合
-  ════════════════════════════════════ -->
-  <div id="comboModal" class="modal-overlay">
-    <div class="modal-card">
-
-      <!-- View 1: 選擇組合 -->
-      <div id="comboSelectView">
-        <div class="modal-header">
-          <span class="modal-header-title" data-i18n="comboSelectTitle">選擇新增組合</span>
-          <button class="modal-close btn-close-combo">&#x2715;</button>
-        </div>
-        <div class="modal-body">
-          <div class="combo-hint" data-i18n-html="comboHint">請選擇已有的組合，套用後第一個尺寸會<strong>修改現有工作區域</strong>，其餘依序<strong>往右新增</strong>。</div>
-          <div id="comboCardList"></div>
-          <button id="btnCreateCombo" class="btn-create-combo" data-i18n="createNewCombo">＋ 建立新組合</button>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost btn-sm btn-close-combo" data-i18n="close">關閉</button>
-          <button id="btnApplySelectedCombo" class="btn btn-cta btn-sm" disabled data-i18n="applyCombo">套用組合</button>
-        </div>
+    <!-- ── Screen 1: Search ── -->
+    <div id="screen-search">
+      <div class="step-indicator">
+        <span class="step active">① 查詢</span>
+        <span class="step-sep">›</span>
+        <span class="step">② 更新</span>
+        <span class="step-sep">›</span>
+        <span class="step">③ 完成</span>
       </div>
 
-      <!-- View 2: 建立 / 編輯組合 -->
-      <div id="comboBuildView" style="display:none; flex-direction:column; min-height:0; flex:1; overflow:hidden;">
-        <div class="modal-header">
-          <div class="builder-back">
-            <button id="btnBackToSelect" class="btn-back" title="返回">&#8592;</button>
-            <span class="builder-title" id="comboBuildTitle" data-i18n="buildComboTitle">建立新組合</span>
-          </div>
-          <button class="modal-close btn-close-combo">&#x2715;</button>
-        </div>
-        <div class="modal-body">
-
-          <div class="modal-field">
-            <label data-i18n="comboNameLabel">組合名稱</label>
-            <input type="text" id="comboBuildName" class="input-full" data-i18n-ph="comboNamePh" placeholder="例：社群媒體全尺寸">
-          </div>
-
-          <div class="modal-unit-row">
-            <span class="section-label" data-i18n="unitLabel">單位</span>
-            <div class="unit-toggle" id="unitToggleCombo">
-              <button class="unit-btn" data-unit="mm">mm</button>
-              <button class="unit-btn" data-unit="cm">cm</button>
-              <button class="unit-btn active" data-unit="px">px</button>
-            </div>
-            <div class="gap-field">
-              <span class="section-label" data-i18n="gapLabel">新增間距</span>
-              <input type="number" id="comboGap" class="gap-input" value="250" min="0" step="1">
-            </div>
-            <div class="dir-field">
-              <span class="section-label" data-i18n="dirLabel">方向</span>
-              <div class="dir-toggle" id="dirToggleCombo">
-                <button class="dir-btn active" data-dir="right" data-i18n="dirRight">→ 往右</button>
-                <button class="dir-btn" data-dir="down" data-i18n="dirDown">↓ 往下</button>
-              </div>
-            </div>
-          </div>
-
-          <span class="section-label" data-i18n="sizesLabel">尺寸設定</span>
-          <div id="comboRows" class="combo-rows"></div>
-          <button id="btnAddComboRow" class="btn-text-link" data-i18n="addArtboardRow">＋ 新增工作區域</button>
-
-        </div>
-        <div class="modal-footer">
-          <button id="btnCancelBuild"    class="btn btn-ghost   btn-sm" data-i18n="cancel">取消</button>
-          <button id="btnSaveBuildCombo" class="btn btn-primary btn-sm" data-i18n="createCombo">建立此組合</button>
-        </div>
+      <div class="field-stack">
+        <input type="password" id="inp-password" placeholder="密碼" autocomplete="current-password" />
+        <input type="text" id="inp-contractId" placeholder="續約編號 (contractId)" autocomplete="off" />
+        <button class="btn-primary" id="btn-search" onclick="doSearch()">搜尋</button>
       </div>
 
+      <div id="search-error" class="error-msg hidden"></div>
+      <div id="search-loading" class="loading-msg hidden">搜尋中...</div>
+
+      <div id="result-section" class="hidden">
+        <hr>
+        <div class="info-grid" id="info-grid"></div>
+
+        <div class="section-label">日期比對</div>
+        <table>
+          <thead>
+            <tr>
+              <th>欄位</th>
+              <th>Ragic</th>
+              <th>Pipedrive</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="date-tbody"></tbody>
+        </table>
+
+        <div class="actions">
+          <button class="btn-cta" onclick="goToUpdate()">進入更新 →</button>
+        </div>
+      </div>
     </div>
+
+    <!-- ── Screen 2: Update ── -->
+    <div id="screen-update" class="hidden">
+      <div class="step-indicator">
+        <span class="step">① 查詢</span>
+        <span class="step-sep">›</span>
+        <span class="step active">② 更新</span>
+        <span class="step-sep">›</span>
+        <span class="step">③ 完成</span>
+      </div>
+      <p style="font-size:0.8rem; color:var(--color-text-secondary); margin-bottom:20px; line-height:1.6;">
+        已帶入 Ragic 資料，可手動修改後再同步。
+      </p>
+
+      <div class="field-group">
+        <label class="field-label">合約簽約日期（signDate）</label>
+        <input type="date" id="edit-signDate" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">合約開始日（startDate）</label>
+        <input type="date" id="edit-startDate" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">合約結束日（endDate）</label>
+        <input type="date" id="edit-endDate" />
+      </div>
+
+      <div id="sync-error" class="error-msg hidden"></div>
+      <div id="sync-loading" class="loading-msg hidden">同步中，請稍候...</div>
+
+      <div class="actions">
+        <button class="btn-ghost" onclick="goBack()">← 返回</button>
+        <button class="btn-cta" id="btn-sync" onclick="doSync()">同步</button>
+      </div>
+    </div>
+
+    <!-- ── Screen 3: Success ── -->
+    <div id="screen-success" class="hidden">
+      <div class="success-screen">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4A7A65" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h2>已完成</h2>
+        <p>合約日期已更新至 Pipedrive<br>同步記錄已寫入 updateinfo</p>
+        <button class="btn-primary" onclick="reset()">繼續查詢</button>
+      </div>
+    </div>
+
   </div>
+</div>
 
-</div><!-- /app -->
-
-<div id="toast" class="toast"></div>
-
-<script src="js/CSInterface.js"></script>
-<script src="js/main.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
