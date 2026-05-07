@@ -54,7 +54,7 @@ async function doSearch() {
     renderEsign(data.esign || null);
 
   } catch (e) {
-    setError('search-error', '連線失敗，請確認 Webhook URL');
+    setError('search-error', `連線失敗：${e.message || e}`);
   } finally {
     btn.disabled = false;
     document.getElementById('search-loading').classList.add('hidden');
@@ -138,8 +138,8 @@ function renderResult({ ragic, pd, diff }) {
 
   const rows = [
     { label: '簽約日期', ragicVal: ragic.signDate,  pdVal: '—',         isDiff: false },
-    { label: '開始日',   ragicVal: ragic.startDate, pdVal: pd.startDate, isDiff: diff.startDate },
-    { label: '結束日',   ragicVal: ragic.endDate,   pdVal: pd.endDate,   isDiff: diff.endDate }
+    { label: '開始日',   ragicVal: ragic.startDate, pdVal: pd.renewStartDate, isDiff: diff.startDate },
+    { label: '結束日',   ragicVal: ragic.endDate,   pdVal: pd.renewEndDate,   isDiff: diff.endDate }
   ];
 
   document.getElementById('date-tbody').innerHTML = rows.map(r => `
@@ -183,8 +183,8 @@ async function doSync() {
   const { pd, ragic } = state;
   const changed = [];
   if (signDate  !== toInputDate(ragic.signDate))  changed.push('signDate');
-  if (startDate !== toInputDate(pd.startDate))    changed.push('startDate');
-  if (endDate   !== toInputDate(pd.endDate))      changed.push('endDate');
+  if (startDate !== toInputDate(pd.renewStartDate)) changed.push('startDate');
+  if (endDate   !== toInputDate(pd.renewEndDate))   changed.push('endDate');
   const updateinfo = changed.length > 0 ? changed.join(', ') : 'signDate, startDate, endDate';
 
   const btn = document.getElementById('btn-sync');
