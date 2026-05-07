@@ -136,8 +136,12 @@ function renderResult({ ragic, pd, diff }) {
     </div>
   `;
 
+  const signColor = ragic.signStartColor === 'red'    ? 'var(--color-danger)'
+                  : ragic.signStartColor === 'yellow' ? 'var(--color-warning)'
+                  : null;
+
   const rows = [
-    { label: '簽約日期', ragicVal: ragic.signDate,  pdVal: '—',         isDiff: false },
+    { label: '簽約日期', ragicVal: ragic.signDate,  pdVal: '—',               isDiff: false, ragicColor: signColor },
     { label: '開始日',   ragicVal: ragic.startDate, pdVal: pd.renewStartDate, isDiff: diff.startDate },
     { label: '結束日',   ragicVal: ragic.endDate,   pdVal: pd.renewEndDate,   isDiff: diff.endDate }
   ];
@@ -145,7 +149,7 @@ function renderResult({ ragic, pd, diff }) {
   document.getElementById('date-tbody').innerHTML = rows.map(r => `
     <tr>
       <td class="field-name">${r.label}</td>
-      <td class="ragic-val">${r.ragicVal || '—'}</td>
+      <td class="ragic-val" style="${r.ragicColor ? `color:${r.ragicColor};font-weight:700;` : ''}">${r.ragicVal || '—'}</td>
       <td class="pd-val ${r.isDiff ? 'diff' : 'match'}">${r.pdVal || '—'}</td>
       <td class="status-cell">
         ${r.isDiff
